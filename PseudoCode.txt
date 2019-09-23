@@ -1,0 +1,131 @@
+Pseudocode for solving puzzle: 
+
+solve_stack(cubes, visited, solution_num)
+1.  i ← 0
+2. Multiplicity ← [array of size 30]
+3. Half solution flag ← False
+4. Half solution counter ← 0
+5. #iterate through all the cubes
+6. while  -1 < i < length of cubes
+7.	backwards iteration flag ← True
+8.	Next half solution flag ← False
+9.  #iterate through the current Cube’s pair of opposite sides
+10.	for each pair of the current cube:
+11. 
+12. #this stops the dfs at the third thread (no solution)
+13.    	if we are on the first cube, half solution, and third color pair:
+14.       	Half solution flag ← False
+15.          	Backward iteration flag ← False
+16.         	#Exit the current iterator
+17.		break
+18.  #if a half solution hasn’t been found, the iterator is at the end of iteration, and the current pair is taken by the current thread, then
+19.	if we are not at the third pair of the current cube:
+20.       	visited[i][j] ← 0
+21.       	multiplicity[cubes[i][j][0]-1] ← multiplicity[cubes[i][j][0]-1] - 1
+22.       	multiplicity[cubes[i][j][1]-1] ← multiplicity[cubes[i][j][1]-1] - 1
+23.       	j ← j + 1
+24.	else:
+25.       	visited[i][j] ← 0
+26.     		multiplicity[cubes[i][j][0]-1] ← multiplicity[cubes[i][j][0]-1] - 1
+27.		multiplicity[cubes[i][j][1]-1] ← multiplicity[cubes[i][j][1]-1] - 1
+28.		Next half solution flag ← True
+29.
+30.#half solution found
+31.	if Next half solution flag is true:
+32.		break
+33.
+34.#(If this pair hasn’t been visited, and the count of the colors of the pair are under 2,
+35.#then pick this pair and add one to the color count)
+36.	if the current pair of colors hasn’t been taken by a thread and the color count for the colors in the pair is less than 3:
+37.#take this pair
+38.		visited[i][j] ← solution_num
+39.		multiplicity[cubes[i][j][0] - 1] ← multiplicity[cubes[i][j][0] - 1] + 1
+40.		multiplicity[cubes[i][j][1] - 1] ← multiplicity[cubes[i][j][1] - 1] + 1
+41.		Backward iteration flag ← False
+42.		i ← i + 1
+43.		break
+44.
+45.	#(moves back the thread to the previous cube to select the available pair. If on the last pair, move back until possible)
+46.	if Backward iteration flag is true:
+47.        i ← i - 1
+48.       backtracking_flag ← False
+49.	while not done backtracking and we haven’t seen all the cubes:
+50.	for each pair of the current cube:
+51.		if our current pair has been chosen by the current thread:
+52.			visited[i][k] ← 0
+53.			multiplicity[cubes[i][k][0] - 1] ← multiplicity[cubes[i][k][0] - 1] - 1
+54.			multiplicity[cubes[i][k][1] - 1] ← multiplicity[cubes[i][k][1] - 1] - 1
+55.			k ← k + 1
+56.			while we are not at the last pair of the current cube:
+57.				if we haven’t chosen the current pair and the colors of the current pair have not been chosen for 3 or more times:
+58.				visited[i][k] ← solution_num #take this pair
+59.				multiplicity[cubes[i][k][0] - 1] ← multiplicity[cubes[i][k][0] - 1]+1
+60.				multiplicity[cubes[i][k][1] - 1] ← multiplicity[cubes[i][k][1] - 1]+1
+61.				backwards iteration flag ← True
+62.				i ← i + 1
+63.				break
+64.			k ← k + 1
+65.		break
+66.           if the backwards iteration flag is not true:
+67.               i ← i - 1
+68.
+69.   #found the end of the stack, Therefore solution.
+70.   If the iteration at the last cube:
+71.       Half solution flag ← True
+72.
+73.   #found the end of the stack on the first solution
+74.   if at the last cube and we are not on the second thread:
+75.       Half solution counter ← Half solution counter + 1
+76.       #print("First Half Solution")
+77.       #for each chosen pair in the visited list:
+78.           #print(visited[t]) 
+79.
+80.       #Find second half solution
+81.       Half solution flag ← result of solve_stack(cubes, visited, 2)
+82.
+83.
+84.       if no half solution was found:
+85.        i ← i -1
+86.
+87.    if at the first half solution, and no half solution was found with the current thread:
+88.   Half solution flag ← False
+89.   #print("Number of half solutions: ", Half solution counter)
+90.   #print("No Solution")
+91.
+92.#if we have found one half solution and solution_num == 1:
+93.   #print("Number of half solutions: ", Half solution counter)
+94.   #print("Complete Solution")
+95.   #for t in range(len(visited)):
+96.   #    print(visited[t])
+97.
+98.#if the Half solution flag is False and solution_num is 1 and i is -1:
+99.   #print("No Solution")
+100.#if the Half solution flag is true and solution_num is 2:
+101. #print("Solution Found")
+102. return Half solution flag
+
+find_min_obs(cubes)
+1.Minimum obstacle ← all cubes
+2.i ← last cube
+3.while a half solution is still possible:
+4.	solution ← False
+5.	subsets ← an array of all the set combinations of all cubes
+6.	For each subset of cube combinations of the current minimum obstacle size:
+7.		visited ← a copy of the subsets array, except all sets in this array are [0,0,0]
+8.		solution ← the result of solve_stack(the current subset, the visited array, 1)
+9.		if a solution was not found in solve_stack thread:
+10.			print("A 'No Solution' was found in set i after so much time x.”)
+11.			print("Minimum obstacle is now: ", Minimum obstacle -1)
+12.			Minimum obstacle ← Minimum obstacle - 1
+13.			for each cube in the current subset:
+14.				print(the cube)
+15.			break
+16.	else:
+17.		print("A Solution Was Found")
+18.	if a solution was found:
+19.		print("Every subset of i number of cubes had a solution")
+20.		print("Minimum Obstacle: ", Minimum obstacle, “ found after so much time x.”)
+21.	if no minimum obstacle was found:
+22.	print("No Minimal Obstacle")
+23.	break
+24.	i ← i - 1
